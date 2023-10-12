@@ -4,52 +4,52 @@ using namespace std;
 class bank{
     public:
     string name;
-    int netAmount;
+    int total_amount;
     set<string> types;
-}; 
+};
 
-int getMinIndex(bank listOfNetAmounts[],int numBanks){
+int getMinIndex(bank net_amounts[],int number_of_banks){
     int min=INT_MAX, minIndex=-1;
-    for(int i=0;i<numBanks;i++){
-        if(listOfNetAmounts[i].netAmount == 0) continue;
+    for(int i=0;i<number_of_banks;i++){
+        if(net_amounts[i].total_amount == 0) continue;
         
-        if(listOfNetAmounts[i].netAmount < min){
+        if(net_amounts[i].total_amount < min){
             minIndex = i;
-            min = listOfNetAmounts[i].netAmount;
+            min = net_amounts[i].total_amount;
         }
     }
     return minIndex;
 }
 
-int getSimpleMaxIndex(bank listOfNetAmounts[],int numBanks){
+int getSimpleMaxIndex(bank net_amounts[],int number_of_banks){
     int max=INT_MIN, maxIndex=-1;
-    for(int i=0;i<numBanks;i++){
-        if(listOfNetAmounts[i].netAmount == 0) continue;
+    for(int i=0;i<number_of_banks;i++){
+        if(net_amounts[i].total_amount == 0) continue;
         
-        if(listOfNetAmounts[i].netAmount > max){
+        if(net_amounts[i].total_amount > max){
             maxIndex = i;
-            max = listOfNetAmounts[i].netAmount;
+            max = net_amounts[i].total_amount;
         }
     }
     return maxIndex;
 }
 
-pair<int,string> getMaxIndex(bank listOfNetAmounts[],int numBanks,int minIndex,bank input[],int maxNumTypes){
+pair<int,string> getMaxIndex(bank net_amounts[],int number_of_banks,int minIndex,bank input[],int maxNumTypes){
     int max=INT_MIN;
     int maxIndex=-1;
     string matchingType;
     
-    for(int i=0;i<numBanks;i++){
-        if(listOfNetAmounts[i].netAmount == 0) continue;
+    for(int i=0;i<number_of_banks;i++){
+        if(net_amounts[i].total_amount == 0) continue;
         
-        if(listOfNetAmounts[i].netAmount < 0) continue;
+        if(net_amounts[i].total_amount < 0) continue;
         
         
         vector<string> v(maxNumTypes);
-        vector<string>::iterator ls=set_intersection(listOfNetAmounts[minIndex].types.begin(),listOfNetAmounts[minIndex].types.end(), listOfNetAmounts[i].types.begin(),listOfNetAmounts[i].types.end(), v.begin());
+        vector<string>::iterator ls=set_intersection(net_amounts[minIndex].types.begin(),net_amounts[minIndex].types.end(), net_amounts[i].types.begin(),net_amounts[i].types.end(), v.begin());
         
-        if((ls-v.begin())!=0 && max<listOfNetAmounts[i].netAmount ){
-            max=listOfNetAmounts[i].netAmount;
+        if((ls-v.begin())!=0 && max<net_amounts[i].total_amount ){
+            max=net_amounts[i].total_amount;
             maxIndex=i;
             matchingType = *(v.begin());
         } 
@@ -58,136 +58,136 @@ pair<int,string> getMaxIndex(bank listOfNetAmounts[],int numBanks,int minIndex,b
     return make_pair(maxIndex,matchingType);
 }
 
-void printAns(vector<vector<pair<int,string>>> ansGraph, int numBanks,bank input[]){
+void printAns(vector<vector<pair<int,string>>> ans_graph, int number_of_banks,bank input[]){
     
     cout<<"\nThe transactions for minimum cash flow are as follows : \n\n";
-    for(int i=0;i<numBanks;i++){
-        for(int j=0;j<numBanks;j++){
+    for(int i=0;i<number_of_banks;i++){
+        for(int j=0;j<number_of_banks;j++){
             
             if(i==j) continue;
             
-            if(ansGraph[i][j].first != 0 && ansGraph[j][i].first != 0){
+            if(ans_graph[i][j].first != 0 && ans_graph[j][i].first != 0){
                 
-                if(ansGraph[i][j].first == ansGraph[j][i].first){
-                    ansGraph[i][j].first=0;
-                    ansGraph[j][i].first=0;
+                if(ans_graph[i][j].first == ans_graph[j][i].first){
+                    ans_graph[i][j].first=0;
+                    ans_graph[j][i].first=0;
                 }
-                else if(ansGraph[i][j].first > ansGraph[j][i].first){
-                    ansGraph[i][j].first -= ansGraph[j][i].first; 
-                    ansGraph[j][i].first =0;
+                else if(ans_graph[i][j].first > ans_graph[j][i].first){
+                    ans_graph[i][j].first -= ans_graph[j][i].first; 
+                    ans_graph[j][i].first =0;
                     
-                    cout<<input[i].name<<" pays Rs" << ansGraph[i][j].first<< "to "<<input[j].name<<" via "<<ansGraph[i][j].second<<endl;
+                    cout<<input[i].name<<" should pay Rs" << ans_graph[i][j].first<< "to "<<input[j].name<<" via "<<ans_graph[i][j].second<<endl;
                 }
                 else{
-                    ansGraph[j][i].first -= ansGraph[i][j].first;
-                    ansGraph[i][j].first = 0;
+                    ans_graph[j][i].first -= ans_graph[i][j].first;
+                    ans_graph[i][j].first = 0;
                     
-                    cout<<input[j].name<<" pays Rs "<< ansGraph[j][i].first<<" to "<<input[i].name<<" via "<<ansGraph[j][i].second<<endl;
+                    cout<<input[j].name<<" should pay Rs "<< ans_graph[j][i].first<<" to "<<input[i].name<<" via "<<ans_graph[j][i].second<<endl;
                     
                 }
             }
-            else if(ansGraph[i][j].first != 0){
-                cout<<input[i].name<<" pays Rs "<<ansGraph[i][j].first<<" to "<<input[j].name<<" via "<<ansGraph[i][j].second<<endl;
+            else if(ans_graph[i][j].first != 0){
+                cout<<input[i].name<<" should pay Rs "<<ans_graph[i][j].first<<" to "<<input[j].name<<" via "<<ans_graph[i][j].second<<endl;
                 
             }
-            else if(ansGraph[j][i].first != 0){
-                cout<<input[j].name<<" pays Rs "<<ansGraph[j][i].first<<" to "<<input[i].name<<" via "<<ansGraph[j][i].second<<endl;
+            else if(ans_graph[j][i].first != 0){
+                cout<<input[j].name<<" should pay Rs "<<ans_graph[j][i].first<<" to "<<input[i].name<<" via "<<ans_graph[j][i].second<<endl;
                 
             }
             
-            ansGraph[i][j].first = 0;
-            ansGraph[j][i].first = 0;
+            ans_graph[i][j].first = 0;
+            ans_graph[j][i].first = 0;
         }
     }
     cout<<"\n";
 }
 
-void minimizeCashFlow(int numBanks,bank input[],unordered_map<string,int>& indexOf,int numTransactions,vector<vector<int>>& graph,int maxNumTypes){
+void minimizeCashFlow(int number_of_banks,bank input[],unordered_map<string,int>& indexOf,int numTransactions,vector<vector<int>>& graph,int maxNumTypes){
     
-    bank listOfNetAmounts[numBanks];
+    bank net_amounts[number_of_banks];
     
-    for(int b=0;b<numBanks;b++){
-        listOfNetAmounts[b].name = input[b].name;
-        listOfNetAmounts[b].types = input[b].types;
+    for(int b=0;b<number_of_banks;b++){
+        net_amounts[b].name = input[b].name;
+        net_amounts[b].types = input[b].types;
         
         int amount = 0;
-        for(int i=0;i<numBanks;i++){
+        for(int i=0;i<number_of_banks;i++){
             amount += (graph[i][b]);
         }
         
-        for(int j=0;j<numBanks;j++){
+        for(int j=0;j<number_of_banks;j++){
             amount += ((-1) * graph[b][j]);
         }
         
-        listOfNetAmounts[b].netAmount = amount;
+        net_amounts[b].total_amount = amount;
     }
     
-    vector<vector<pair<int,string>>> ansGraph(numBanks,vector<pair<int,string>>(numBanks,{0,""}));//adjacency matrix
+    vector<vector<pair<int,string>>> ans_graph(number_of_banks,vector<pair<int,string>>(number_of_banks,{0,""}));
     
     
-    int numZeroNetAmounts=0;
+    int numZerototal_amounts=0;
     
-    for(int i=0;i<numBanks;i++){
-        if(listOfNetAmounts[i].netAmount == 0) numZeroNetAmounts++;
+    for(int i=0;i<number_of_banks;i++){
+        if(net_amounts[i].total_amount == 0) numZerototal_amounts++;
     }
-    while(numZeroNetAmounts!=numBanks){
+    while(numZerototal_amounts!=number_of_banks){
         
-        int minIndex=getMinIndex(listOfNetAmounts, numBanks);
-        pair<int,string> maxAns = getMaxIndex(listOfNetAmounts, numBanks, minIndex,input,maxNumTypes);
+        int minIndex=getMinIndex(net_amounts, number_of_banks);
+        pair<int,string> maxAns = getMaxIndex(net_amounts, number_of_banks, minIndex,input,maxNumTypes);
         
         int maxIndex = maxAns.first;
         
         if(maxIndex == -1){
             
-            (ansGraph[minIndex][0].first) += abs(listOfNetAmounts[minIndex].netAmount);
-            (ansGraph[minIndex][0].second) = *(input[minIndex].types.begin());
+            (ans_graph[minIndex][0].first) += abs(net_amounts[minIndex].total_amount);
+            (ans_graph[minIndex][0].second) = *(input[minIndex].types.begin());
             
-            int simpleMaxIndex = getSimpleMaxIndex(listOfNetAmounts, numBanks);
-            (ansGraph[0][simpleMaxIndex].first) += abs(listOfNetAmounts[minIndex].netAmount);
-            (ansGraph[0][simpleMaxIndex].second) = *(input[simpleMaxIndex].types.begin());
+            int simpleMaxIndex = getSimpleMaxIndex(net_amounts, number_of_banks);
+            (ans_graph[0][simpleMaxIndex].first) += abs(net_amounts[minIndex].total_amount);
+            (ans_graph[0][simpleMaxIndex].second) = *(input[simpleMaxIndex].types.begin());
             
-            listOfNetAmounts[simpleMaxIndex].netAmount += listOfNetAmounts[minIndex].netAmount;
-            listOfNetAmounts[minIndex].netAmount = 0;
+            net_amounts[simpleMaxIndex].total_amount += net_amounts[minIndex].total_amount;
+            net_amounts[minIndex].total_amount = 0;
             
-            if(listOfNetAmounts[minIndex].netAmount == 0) numZeroNetAmounts++;
+            if(net_amounts[minIndex].total_amount == 0) numZerototal_amounts++;
             
-            if(listOfNetAmounts[simpleMaxIndex].netAmount == 0) numZeroNetAmounts++;
+            if(net_amounts[simpleMaxIndex].total_amount == 0) numZerototal_amounts++;
             
         }
         else{
-            int transactionAmount = min(abs(listOfNetAmounts[minIndex].netAmount), listOfNetAmounts[maxIndex].netAmount);
+            int transactionAmount = min(abs(net_amounts[minIndex].total_amount), net_amounts[maxIndex].total_amount);
             
-            (ansGraph[minIndex][maxIndex].first) += (transactionAmount);
-            (ansGraph[minIndex][maxIndex].second) = maxAns.second;
+            (ans_graph[minIndex][maxIndex].first) += (transactionAmount);
+            (ans_graph[minIndex][maxIndex].second) = maxAns.second;
             
-            listOfNetAmounts[minIndex].netAmount += transactionAmount;
-            listOfNetAmounts[maxIndex].netAmount -= transactionAmount;
+            net_amounts[minIndex].total_amount += transactionAmount;
+            net_amounts[maxIndex].total_amount -= transactionAmount;
             
-            if(listOfNetAmounts[minIndex].netAmount == 0) numZeroNetAmounts++;
+            if(net_amounts[minIndex].total_amount == 0) numZerototal_amounts++;
             
-            if(listOfNetAmounts[maxIndex].netAmount == 0) numZeroNetAmounts++;
+            if(net_amounts[maxIndex].total_amount == 0) numZerototal_amounts++;
         }
         
     }
     
-    printAns(ansGraph,numBanks,input);
+    printAns(ans_graph,number_of_banks,input);
 }
 
 int main() 
 { 
     
     cout<<"The number of transactions between various banks throughout the globe using various payment methods is reduced by this approach.A single global bank that accepts all payment methods serves as a bridge between banks that do not share a common payment method. \n\n";
-    cout<<"Enter the number of banks in the transactions.\n";
-    int numBanks;cin>>numBanks;
+    cout<<"Enter the number of banks between which the money exchange is to happen.\n";
+    int number_of_banks;cin>>number_of_banks;
     
-    bank input[numBanks];
+    bank input[number_of_banks];
     unordered_map<string,int> indexOf;
     
     cout<<"Enter the following details:\n";
-    cout<<"Bank name ,number of payment modes it has and the payment modes.\n";
+    cout<<"Bank name ,number of payment modes and the payment modes.\n";
     
     int maxNumTypes;
-    for(int i=0; i<numBanks;i++){
+    for(int i=0; i<number_of_banks;i++){
         if(i==0){
             cout<<"Central Bank : ";
         }
@@ -210,11 +210,11 @@ int main()
         
     }
     
-    cout<<"Enter number of transactions.\n";
+    cout<<"Enter the number of transactions happening between the banks.\n";
     int numTransactions;
     cin>>numTransactions;
     
-    vector<vector<int>> graph(numBanks,vector<int>(numBanks,0));
+    vector<vector<int>> graph(number_of_banks,vector<int>(number_of_banks,0));
     
     cout<<"Enter the following details";
     cout<<"Debtor Bank , creditor Bank and amount\n";
@@ -226,6 +226,6 @@ int main()
         
         graph[indexOf[s1]][indexOf[s2]] = amount;
     }
-    minimizeCashFlow(numBanks,input,indexOf,numTransactions,graph,maxNumTypes);
+    minimizeCashFlow(number_of_banks,input,indexOf,numTransactions,graph,maxNumTypes);
     return 0; 
 } 
